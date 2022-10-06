@@ -39,7 +39,8 @@ export enum OverrideMechanism {
 }
 
 export interface QueryOptions {
-  overrideMechanism: OverrideMechanism
+  overrideMechanism?: OverrideMechanism
+  untruncated?: boolean
 }
 
 export interface QueryScope {
@@ -530,8 +531,13 @@ export const QueryProvider: FC = ({children}) => {
     }
   }, [])
 
-  const basic = (text: string, override: QueryScope, options: QueryOptions) => {
+  const basic = (
+    text: string,
+    override: QueryScope,
+    options?: QueryOptions
+  ) => {
     const mechanism = options?.overrideMechanism ?? OverrideMechanism.AST
+    const untruncated = options?.untruncated ?? false
     const query =
       mechanism === OverrideMechanism.Inline
         ? simplify(text, override?.vars ?? {}, override?.params ?? {})
@@ -602,7 +608,7 @@ export const QueryProvider: FC = ({children}) => {
 
             bytesRead += read.value.byteLength
 
-            if (bytesRead > BYTE_LIMIT) {
+            if (!untruncated && bytesRead > BYTE_LIMIT) {
               csv += trimPartialLines(text)
               didTruncate = true
               break

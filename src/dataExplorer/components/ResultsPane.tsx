@@ -110,9 +110,13 @@ const ResultsPane: FC = () => {
 
   const download = () => {
     event('CSV Download Initiated')
-    basic(text, {
-      vars: rangeToParam(range),
-    }).promise.then(response => {
+    basic(
+      text,
+      {
+        vars: rangeToParam(range),
+      },
+      {untruncated: true}
+    ).promise.then(response => {
       if (response.type !== 'SUCCESS') {
         return
       }
